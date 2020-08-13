@@ -2,6 +2,17 @@
 
 metabaser is an R package to connect to and query a Metabase API.
 
+## Installation
+
+The simplest way to install the package is directly from gitlab using `devtools`.
+
+```
+devtools::install_git('https://username:password@gitlab.hres.ca/phac/metabaser.git')
+
+```
+Note that this is not completly secure as a password is typed in the clear.
+Some work needs to be done to investigate installation using access tokens or over SSH.
+
 ## Usage
 
 ```
