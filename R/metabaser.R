@@ -43,7 +43,7 @@ metabase_login <- function(creds_file = Sys.getenv("METABASE_CREDS_FILE")) {
     if (httr::http_error(resp)) {
         stop(
             stringr::str_glue(
-                "Metabase login failed [{status_code(resp)}]",
+                "Metabase login failed [{httr::status_code(resp)}]",
                 unlist(httr::content(resp)$errors),
                 .sep = "\n"
             )
@@ -69,7 +69,7 @@ metabase_logout <- function() {
     if (httr::http_error(resp)) {
         stop(
             stringr::str_glue(
-                "Metabase logout failed [{status_code(resp)}]",
+                "Metabase logout failed [{httr::status_code(resp)}]",
                 httr::content(resp, type = "text", encoding = "UTF-8"),
                 .sep = "\n"
             )
