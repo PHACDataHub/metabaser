@@ -4,10 +4,17 @@
 \alias{metabase_login}
 \title{Login to Metabase}
 \usage{
-metabase_login(creds_file = Sys.getenv("METABASE_CREDS_FILE"))
+metabase_login(base_url, database_id, creds_file, auto_setup = TRUE)
 }
 \arguments{
+\item{base_url}{Base URL for the Metabase API}
+
+\item{database_id}{Database ID to connect to}
+
 \item{creds_file}{File containing Metabase account credentials to connect with}
+
+\item{auto_setup}{If TRUE, will automatically setup the connection before login,
+if FALSE, requires \code{\link{metabase_setup}} to be executed before}
 }
 \description{
 This will login to the Metabase API with the username and password specified in the given file.

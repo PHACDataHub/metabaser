@@ -27,9 +27,17 @@ metabase_setup <- function(base_url, database_id, creds_file = "~/metabase_creds
 #' If the login is successful, a cookie will be set behind the scense with a session ID for all future requests.
 #' If \code{\link{metabase_setup}} was used, \code{metabase_login} will be automatically configured with a creds_file.
 #'
+#' @param base_url Base URL for the Metabase API
+#' @param database_id Database ID to connect to
 #' @param creds_file File containing Metabase account credentials to connect with
+#' @param auto_setup If TRUE, will automatically setup the connection before login,
+#' if FALSE, requires \code{\link{metabase_setup}} to be executed before
 #' @export
-metabase_login <- function(creds_file = Sys.getenv("METABASE_CREDS_FILE")) {
+metabase_login <- function(base_url, database_id, creds_file, auto_setup = TRUE) {
+    if (auto_setup)
+        metabase_setup(base_url = base_url, database_id = database_id, creds_file = creds_file)
+    else
+        creds_file <- Sys.getenv("METABASE_CREDS_FILE")
     creds <- stringr::str_split(readr::read_lines(creds_file), "=", simplify = TRUE)[,2]
     username <- creds[1]
     password <- creds[2]

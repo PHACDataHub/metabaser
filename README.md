@@ -16,14 +16,11 @@ Some work needs to be done to investigate installation using access tokens or ov
 ## Usage
 
 ```
-# setup connection
-metabase_setup(base_url = "https://atlas-metabase.hres.ca/api",
+# login and setup connection
+metabase_status()
+metabase_login(base_url = "https://atlas-metabase.hres.ca/api",
                database_id = 17, # phac database
                creds_file = "~/metabase_creds")
-
-# login
-metabase_status()
-metabase_login()
 metabase_status()
 
 # query
