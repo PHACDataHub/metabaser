@@ -1,3 +1,6 @@
+#' @importFrom magrittr %>%
+NULL
+
 #' Assemble URL
 #' @keywords internal
 build_url <- function(base_url = Sys.getenv("METABASE_BASE_URL"), path) {
