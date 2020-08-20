@@ -148,11 +148,12 @@ metabase_query2 <- function(sql_query, database_id = Sys.getenv("METABASE_DATABA
 #' This might be faster for small lookups of the DB.
 #'
 #' @param sql_query SQL query to execute
-#' @param database_id Database ID to query, will be set by \code{\link{metabase_setup}}.
+#' @param database_id Database ID to query, will be set by \code{\link{metabase_setup}}
+#' @param col_types Column types to use for parsing as specified in \code{\link[readr]{read_csv}}
 #'
 #' @return data.frame containing the results of the query
 #' @export
-metabase_query <- function(sql_query, database_id = Sys.getenv("METABASE_DATABASE_ID")) {
+metabase_query <- function(sql_query, col_types = NULL, database_id = Sys.getenv("METABASE_DATABASE_ID")) {
     if (!metabase_status()) stop("No connection to Metabase.")
     database_id <- as.integer(database_id)
     resp <- httr::POST(
@@ -181,6 +182,6 @@ metabase_query <- function(sql_query, database_id = Sys.getenv("METABASE_DATABAS
             stop("Incorrect format returned by Metabase (json instead of csv).")
         }
     } else if (resp_type == "csv") {
-        readr::read_csv(httr::content(resp, as = "text", encoding = "UTF-8"))
+        readr::read_csv(httr::content(resp, as = "text", encoding = "UTF-8"), col_types = col_types)
     }
 }

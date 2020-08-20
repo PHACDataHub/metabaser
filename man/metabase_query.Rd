@@ -4,12 +4,18 @@
 \alias{metabase_query}
 \title{Query Metabase}
 \usage{
-metabase_query(sql_query, database_id = Sys.getenv("METABASE_DATABASE_ID"))
+metabase_query(
+  sql_query,
+  col_types = NULL,
+  database_id = Sys.getenv("METABASE_DATABASE_ID")
+)
 }
 \arguments{
 \item{sql_query}{SQL query to execute}
 
-\item{database_id}{Database ID to query, will be set by \code{\link{metabase_setup}}.}
+\item{col_types}{Column types to use for parsing as specified in \code{\link[readr]{read_csv}}}
+
+\item{database_id}{Database ID to query, will be set by \code{\link{metabase_setup}}}
 }
 \value{
 data.frame containing the results of the query
