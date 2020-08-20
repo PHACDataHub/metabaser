@@ -158,7 +158,7 @@ metabase_query <- function(sql_query, database_id = Sys.getenv("METABASE_DATABAS
     resp <- httr::POST(
         url = build_url(path = "dataset/csv"),
         body = list(query = jsonlite::toJSON(list(
-            database = 17,
+            database = database_id,
             native = list(query = sql_query),
             type = "native"),
             auto_unbox = TRUE)),
