@@ -116,6 +116,7 @@ metabase_status <- function() {
 #' @return data.frame containing the results of the query
 #' @export
 metabase_query2 <- function(sql_query, database_id = Sys.getenv("METABASE_DATABASE_ID")) {
+    if (!metabase_status()) stop("No connection to Metabase.")
     database_id <- as.integer(database_id)
     resp <- httr::POST(
         url = build_url(path = "dataset"),
@@ -152,6 +153,7 @@ metabase_query2 <- function(sql_query, database_id = Sys.getenv("METABASE_DATABA
 #' @return data.frame containing the results of the query
 #' @export
 metabase_query <- function(sql_query, database_id = Sys.getenv("METABASE_DATABASE_ID")) {
+    if (!metabase_status()) stop("No connection to Metabase.")
     database_id <- as.integer(database_id)
     resp <- httr::POST(
         url = build_url(path = "dataset/csv"),
