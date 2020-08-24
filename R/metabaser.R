@@ -37,6 +37,10 @@ metabase_setup <- function(base_url, database_id, creds_file = "~/metabase_creds
 #' if FALSE, requires \code{\link{metabase_setup}} to be executed before
 #' @export
 metabase_login <- function(base_url, database_id, creds_file, auto_setup = TRUE) {
+    if (metabase_status()) {
+        warning("Already logged-in to Metabase. Please logout before trying to login.")
+        return(invisible(NULL))
+    }
     if (auto_setup)
         metabase_setup(base_url = base_url, database_id = database_id, creds_file = creds_file)
     else
