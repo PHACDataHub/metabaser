@@ -18,9 +18,9 @@ metabase_url <- function(url = NULL) {
         Sys.setenv(METABASE_BASE_URL = url)
         return(invisible(url))
     } else {
-        url <- Sys.getenv("METABASE_BASE_URL")
-        if (identical(url, "")) {
-            stop("Please set env var METABASE_BASE_URL to the url of the Metabse API.")
+        url <- Sys.getenv("METABASE_BASE_URL", unset = NA)
+        if (is.na(url)) {
+            warning("env var METABASE_BASE_URL is not set to the Metabse API.", call. = FALSE)
         }
     }
     url
@@ -37,9 +37,9 @@ metabase_db <- function(db_id = NULL) {
         Sys.setenv(METABASE_DATABASE_ID = db_id)
         return(invisible(db_id))
     } else {
-        db_id <- Sys.getenv("METABASE_DATABASE_ID")
-        if (identical(db_id, "")) {
-            stop("Please set env var METABASE_DATABASE_ID to the ID number of the database to connect to.")
+        db_id <- Sys.getenv("METABASE_DATABASE_ID", unset = NA)
+        if (is.na(db_id)) {
+            stop("env var METABASE_DATABASE_ID is not set to the ID number of the database.", call. = FALSE)
         }
     }
     db_id
@@ -62,7 +62,7 @@ metabase_db <- function(db_id = NULL) {
 #' if FALSE, requires \code{\link{metabase_setup}} to be executed before
 #' @export
 metabase_login <- function(base_url, database_id, creds_file = NULL, username = NULL, password = NULL, auto_setup = TRUE) {
-    if (metabase_status(base_url)) {
+    if (metabase_status()) {
         warning("Already logged-in to Metabase. Please logout before trying to login.", call. = FALSE)
         return(invisible(NULL))
     }
@@ -134,10 +134,11 @@ metabase_logout <- function() {
 }
 
 #' Check Metabase status
-#' @param base_url Base URL for the Metabase API
+#'
 #' @return TRUE if a session is active with a logged-in user, FALSE otherwise.
 #' @export
-metabase_status <- function(base_url = metabase_url()) {
+metabase_status <- function() {
+    base_url <- suppressWarnings(metabase_url())
     session_id <- httr::handle_find(base_url) %>%
         httr::cookies() %>%
         dplyr::filter(name == "metabase.SESSION") %>%
