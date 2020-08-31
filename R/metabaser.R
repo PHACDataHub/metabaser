@@ -3,10 +3,16 @@ NULL
 
 #' Assemble URL
 #' @keywords internal
-build_url <- function(base_url = Sys.getenv("METABASE_BASE_URL"), path) {
+build_url <- function(base_url = metabase_url(), path) {
     paste(base_url, path, sep = "/")
 }
 
+#' Get/Set Metabase URL
+#'
+#' If no argument is given, retrieves the current Metabase URL.
+#' If an argument is given, sets the Metabase URL.
+#'
+#' @export
 metabase_url <- function(url = NULL) {
     if (!is.null(url)) {
         Sys.setenv(METABASE_BASE_URL = url)
@@ -20,6 +26,12 @@ metabase_url <- function(url = NULL) {
     url
 }
 
+#' Get/Set Metabase DB ID
+#'
+#' If no argument is given, retrieves the current Metabase database ID.
+#' If an argument is given, sets the Metabase database ID.
+#'
+#' @export
 metabase_db <- function(db_id = NULL) {
     if (!is.null(db_id)) {
         Sys.setenv(METABASE_DATABASE_ID = db_id)
@@ -50,8 +62,8 @@ metabase_db <- function(db_id = NULL) {
 #' if FALSE, requires \code{\link{metabase_setup}} to be executed before
 #' @export
 metabase_login <- function(base_url, database_id, creds_file = NULL, username = NULL, password = NULL, auto_setup = TRUE) {
-    if (metabase_status()) {
-        warning("Already logged-in to Metabase. Please logout before trying to login.")
+    if (metabase_status(base_url)) {
+        warning("Already logged-in to Metabase. Please logout before trying to login.", call. = FALSE)
         return(invisible(NULL))
     }
 
@@ -97,6 +109,11 @@ metabase_login <- function(base_url, database_id, creds_file = NULL, username = 
 #' Logs out the user by sending a request to delete the user session.
 #' @export
 metabase_logout <- function() {
+    if (!metabase_status()) {
+        warning("Cannot logout. There is no active Metabase session.", call. = FALSE)
+        return(invisible(NULL))
+    }
+
     resp <- httr::DELETE(
         url = build_url(path = "session")
     )
@@ -117,10 +134,11 @@ metabase_logout <- function() {
 }
 
 #' Check Metabase status
+#' @param base_url Base URL for the Metabase API
 #' @return TRUE if a session is active with a logged-in user, FALSE otherwise.
 #' @export
-metabase_status <- function() {
-    session_id <- httr::handle_find("https://atlas-metabase.hres.ca/api") %>%
+metabase_status <- function(base_url = metabase_url()) {
+    session_id <- httr::handle_find(base_url) %>%
         httr::cookies() %>%
         dplyr::filter(name == "metabase.SESSION") %>%
         dplyr::pull(value)
@@ -135,11 +153,11 @@ metabase_status <- function() {
 #' This might be faster for small lookups of the DB.
 #'
 #' @param sql_query SQL query to execute
-#' @param database_id Database ID to query, will be set by \code{\link{metabase_setup}}.
+#' @param database_id Database ID to query, will be set automatically upon login
 #'
 #' @return data.frame containing the results of the query
 #' @export
-metabase_query2 <- function(sql_query, database_id = Sys.getenv("METABASE_DATABASE_ID")) {
+metabase_query2 <- function(sql_query, database_id = metabase_db()) {
     if (!metabase_status()) stop("No connection to Metabase.")
     database_id <- as.integer(database_id)
     resp <- httr::POST(
@@ -172,12 +190,12 @@ metabase_query2 <- function(sql_query, database_id = Sys.getenv("METABASE_DATABA
 #' This might be faster for small lookups of the DB.
 #'
 #' @param sql_query SQL query to execute
-#' @param database_id Database ID to query, will be set by \code{\link{metabase_setup}}
 #' @param col_types Column types to use for parsing as specified in \code{\link[readr]{read_csv}}
+#' @param database_id Database ID to query, will be set automatically upon login
 #'
 #' @return data.frame containing the results of the query
 #' @export
-metabase_query <- function(sql_query, col_types = NULL, database_id = Sys.getenv("METABASE_DATABASE_ID")) {
+metabase_query <- function(sql_query, col_types = NULL, database_id = metabase_db()) {
     if (!metabase_status()) stop("No connection to Metabase.")
     database_id <- as.integer(database_id)
     resp <- httr::POST(

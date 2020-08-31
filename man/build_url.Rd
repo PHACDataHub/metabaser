@@ -4,7 +4,7 @@
 \alias{build_url}
 \title{Assemble URL}
 \usage{
-build_url(base_url = Sys.getenv("METABASE_BASE_URL"), path)
+build_url(base_url = metabase_url(), path)
 }
 \description{
 Assemble URL

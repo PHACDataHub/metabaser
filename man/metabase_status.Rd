@@ -4,7 +4,10 @@
 \alias{metabase_status}
 \title{Check Metabase status}
 \usage{
-metabase_status()
+metabase_status(base_url = metabase_url())
+}
+\arguments{
+\item{base_url}{Base URL for the Metabase API}
 }
 \value{
 TRUE if a session is active with a logged-in user, FALSE otherwise.
