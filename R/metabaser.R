@@ -7,47 +7,67 @@ build_url <- function(base_url = Sys.getenv("METABASE_BASE_URL"), path) {
     paste(base_url, path, sep = "/")
 }
 
-#' Setup Metabase connection
-#'
-#' Sets environment variables for the connection to Metabase.
-#'
-#' @param base_url Base URL for the Metabase API
-#' @param database_id Database ID to connect to
-#' @param creds_file File containing Metabase account credentials to connect with
-#' @export
-metabase_setup <- function(base_url, database_id, creds_file = "~/metabase_creds") {
-    Sys.setenv(
-        METABASE_BASE_URL = base_url,
-        METABASE_DATABASE_ID = database_id,
-        METABASE_CREDS_FILE = creds_file
-    )
+metabase_url <- function(url = NULL) {
+    if (!is.null(url)) {
+        Sys.setenv(METABASE_BASE_URL = url)
+        return(invisible(url))
+    } else {
+        url <- Sys.getenv("METABASE_BASE_URL")
+        if (identical(url, "")) {
+            stop("Please set env var METABASE_BASE_URL to the url of the Metabse API.")
+        }
+    }
+    url
+}
+
+metabase_db <- function(db_id = NULL) {
+    if (!is.null(db_id)) {
+        Sys.setenv(METABASE_DATABASE_ID = db_id)
+        return(invisible(db_id))
+    } else {
+        db_id <- Sys.getenv("METABASE_DATABASE_ID")
+        if (identical(db_id, "")) {
+            stop("Please set env var METABASE_DATABASE_ID to the ID number of the database to connect to.")
+        }
+    }
+    db_id
 }
 
 #' Login to Metabase
 #'
-#' This will login to the Metabase API with the username and password specified in the given file.
+#' This will login to the Metabase API with the given username and password.
+#' Credentials must be specified either directly through the \code{username} and \code{password} parameters
+#' or as a file through the \code{creds_file} parameter.
+#'
 #' The file should have "username=username" on one line and "password=password" on the next.
-#' If the login is successful, a cookie will be set behind the scense with a session ID for all future requests.
-#' If \code{\link{metabase_setup}} was used, \code{metabase_login} will be automatically configured with a creds_file.
+#' If the login is successful, a cookie will be set behind the scenes with a session ID for all future requests.
 #'
 #' @param base_url Base URL for the Metabase API
 #' @param database_id Database ID to connect to
 #' @param creds_file File containing Metabase account credentials to connect with
-#' @param auto_setup If TRUE, will automatically setup the connection before login,
+#' @param username Username
+#' @param password Password
 #' if FALSE, requires \code{\link{metabase_setup}} to be executed before
 #' @export
-metabase_login <- function(base_url, database_id, creds_file, auto_setup = TRUE) {
+metabase_login <- function(base_url, database_id, creds_file = NULL, username = NULL, password = NULL, auto_setup = TRUE) {
     if (metabase_status()) {
         warning("Already logged-in to Metabase. Please logout before trying to login.")
         return(invisible(NULL))
     }
-    if (auto_setup)
-        metabase_setup(base_url = base_url, database_id = database_id, creds_file = creds_file)
-    else
-        creds_file <- Sys.getenv("METABASE_CREDS_FILE")
-    creds <- stringr::str_split(readr::read_lines(creds_file), "=", simplify = TRUE)[,2]
-    username <- creds[1]
-    password <- creds[2]
+
+    metabase_url(base_url)
+    metabase_db(database_id)
+
+    if (!is.null(creds_file)) {
+        creds <- stringr::str_split(readr::read_lines(creds_file), "=", simplify = TRUE)[,2]
+        username <- creds[1]
+        password <- creds[2]
+    } else if (!is.null(username) & !is.null(password)) {
+        username <- username
+        password <- password
+    } else {
+        stop("One of creds_file or username and password must be specified.", call. = FALSE)
+    }
 
     resp <- httr::POST(
         url = build_url(path = "session"),
@@ -61,8 +81,8 @@ metabase_login <- function(base_url, database_id, creds_file, auto_setup = TRUE)
                 "Metabase login failed [{httr::status_code(resp)}]",
                 unlist(httr::content(resp)$errors),
                 .sep = "\n"
-            )
-        )
+            ),
+        call. = FALSE)
     } else {
         message(
             stringr::str_glue(
