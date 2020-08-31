@@ -59,9 +59,8 @@ metabase_db <- function(db_id = NULL) {
 #' @param creds_file File containing Metabase account credentials to connect with
 #' @param username Username
 #' @param password Password
-#' if FALSE, requires \code{\link{metabase_setup}} to be executed before
 #' @export
-metabase_login <- function(base_url, database_id, creds_file = NULL, username = NULL, password = NULL, auto_setup = TRUE) {
+metabase_login <- function(base_url, database_id, creds_file = NULL, username = NULL, password = NULL) {
     if (metabase_status()) {
         warning("Already logged-in to Metabase. Please logout before trying to login.", call. = FALSE)
         return(invisible(NULL))

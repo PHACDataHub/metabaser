@@ -9,8 +9,7 @@ metabase_login(
   database_id,
   creds_file = NULL,
   username = NULL,
-  password = NULL,
-  auto_setup = TRUE
+  password = NULL
 )
 }
 \arguments{
@@ -22,8 +21,7 @@ metabase_login(
 
 \item{username}{Username}
 
-\item{password}{Password
-if FALSE, requires \code{\link{metabase_setup}} to be executed before}
+\item{password}{Password}
 }
 \description{
 This will login to the Metabase API with the given username and password.
