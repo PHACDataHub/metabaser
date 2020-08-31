@@ -4,12 +4,12 @@
 \alias{metabase_query2}
 \title{Query Metabase}
 \usage{
-metabase_query2(sql_query, database_id = Sys.getenv("METABASE_DATABASE_ID"))
+metabase_query2(sql_query, database_id = metabase_db())
 }
 \arguments{
 \item{sql_query}{SQL query to execute}
 
-\item{database_id}{Database ID to query, will be set by \code{\link{metabase_setup}}.}
+\item{database_id}{Database ID to query, will be set automatically upon login}
 }
 \value{
 data.frame containing the results of the query

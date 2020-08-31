@@ -4,7 +4,13 @@
 \alias{metabase_login}
 \title{Login to Metabase}
 \usage{
-metabase_login(base_url, database_id, creds_file, auto_setup = TRUE)
+metabase_login(
+  base_url,
+  database_id,
+  creds_file = NULL,
+  username = NULL,
+  password = NULL
+)
 }
 \arguments{
 \item{base_url}{Base URL for the Metabase API}
@@ -13,12 +19,16 @@ metabase_login(base_url, database_id, creds_file, auto_setup = TRUE)
 
 \item{creds_file}{File containing Metabase account credentials to connect with}
 
-\item{auto_setup}{If TRUE, will automatically setup the connection before login,
-if FALSE, requires \code{\link{metabase_setup}} to be executed before}
+\item{username}{Username}
+
+\item{password}{Password}
 }
 \description{
-This will login to the Metabase API with the username and password specified in the given file.
+This will login to the Metabase API with the given username and password.
+Credentials must be specified either directly through the \code{username} and \code{password} parameters
+or as a file through the \code{creds_file} parameter.
+}
+\details{
 The file should have "username=username" on one line and "password=password" on the next.
-If the login is successful, a cookie will be set behind the scense with a session ID for all future requests.
-If \code{\link{metabase_setup}} was used, \code{metabase_login} will be automatically configured with a creds_file.
+If the login is successful, a cookie will be set behind the scenes with a session ID for all future requests.
 }
