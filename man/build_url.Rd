@@ -4,7 +4,7 @@
 \alias{build_url}
 \title{Assemble URL}
 \usage{
-build_url(base_url = metabase_url(), path)
+build_url(base, path)
 }
 \description{
 Assemble URL

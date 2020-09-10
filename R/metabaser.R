@@ -3,8 +3,19 @@ NULL
 
 #' Assemble URL
 #' @keywords internal
-build_url <- function(base_url = metabase_url(), path) {
-    paste(base_url, path, sep = "/")
+build_url <- function(base, path) {
+    paste(base, path, sep = "/")
+}
+
+metabase_handle <- function(base_url, database_id, username) {
+    structure(list(
+        base_url = base_url,
+        database_id = database_id,
+        username = username,
+        handle = httr::handle(base_url),
+        token = NA,
+        status = FALSE
+    ), class = "metabase_handle")
 }
 
 #' Get/Set Metabase URL
@@ -66,8 +77,8 @@ metabase_login <- function(base_url, database_id, creds_file = NULL, username = 
         return(invisible(NULL))
     }
 
-    metabase_url(base_url)
-    metabase_db(database_id)
+    ###metabase_url(base_url)
+    ###metabase_db(database_id)
 
     if (!is.null(creds_file)) {
         creds <- stringr::str_split(readr::read_lines(creds_file), "=", simplify = TRUE)[,2]
@@ -80,10 +91,13 @@ metabase_login <- function(base_url, database_id, creds_file = NULL, username = 
         stop("One of creds_file or username and password must be specified.", call. = FALSE)
     }
 
+    hand <- metabase_handle(base_url = base_url, database_id = database_id, username = username)
+
     resp <- httr::POST(
-        url = build_url(path = "session"),
+        url = build_url(base_url, path = "session"),
         body = list(username = username, password = password),
-        encode = "json"
+        encode = "json",
+        handle = hand$handle
     )
 
     if (httr::http_error(resp)) {
@@ -94,13 +108,14 @@ metabase_login <- function(base_url, database_id, creds_file = NULL, username = 
                 .sep = "\n"
             ),
         call. = FALSE)
-    } else {
-        message(
-            stringr::str_glue(
-                "Metabase login successful for {username} !"
-            )
-        )
     }
+    hand$token <- hand$handle %>%
+        httr::cookies() %>%
+        dplyr::filter(name == "metabase.SESSION") %>%
+        dplyr::pull(value)
+    hand$status <- TRUE
+    message(stringr::str_glue("Metabase login successful for {username} !"))
+    hand
 }
 
 #' Logout of Metabase
