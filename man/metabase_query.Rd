@@ -4,14 +4,14 @@
 \alias{metabase_query}
 \title{Query Metabase}
 \usage{
-metabase_query(sql_query, col_types = NULL, database_id = metabase_db())
+metabase_query(handle, sql_query, col_types = NULL)
 }
 \arguments{
+\item{handle}{metabase_handle object}
+
 \item{sql_query}{SQL query to execute}
 
 \item{col_types}{Column types to use for parsing as specified in \code{\link[readr]{read_csv}}}
-
-\item{database_id}{Database ID to query, will be set automatically upon login}
 }
 \value{
 data.frame containing the results of the query

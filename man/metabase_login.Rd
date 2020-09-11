@@ -29,6 +29,6 @@ Credentials must be specified either directly through the \code{username} and \c
 or as a file through the \code{creds_file} parameter.
 }
 \details{
-The file should have "username=username" on one line and "password=password" on the next.
-If the login is successful, a cookie will be set behind the scenes with a session ID for all future requests.
+If used, the creds_file should have "username=username" on one line and "password=password" on the next.
+If the login is successful, a \code{metabase_handle} object will be returned to use in subsequent functions.
 }

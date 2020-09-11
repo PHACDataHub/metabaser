@@ -4,12 +4,12 @@
 \alias{metabase_query2}
 \title{Query Metabase}
 \usage{
-metabase_query2(sql_query, database_id = metabase_db())
+metabase_query2(handle, sql_query)
 }
 \arguments{
-\item{sql_query}{SQL query to execute}
+\item{handle}{metabase_handle object}
 
-\item{database_id}{Database ID to query, will be set automatically upon login}
+\item{sql_query}{SQL query to execute}
 }
 \value{
 data.frame containing the results of the query

@@ -4,7 +4,12 @@
 \alias{build_url}
 \title{Assemble URL}
 \usage{
-build_url(base, path)
+build_url(handle, path)
+}
+\arguments{
+\item{handle}{metabase_handle object}
+
+\item{path}{API endpoint path}
 }
 \description{
 Assemble URL

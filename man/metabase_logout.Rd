@@ -4,7 +4,10 @@
 \alias{metabase_logout}
 \title{Logout of Metabase}
 \usage{
-metabase_logout()
+metabase_logout(handle)
+}
+\arguments{
+\item{handle}{metabase_handle object}
 }
 \description{
 Logs out the user by sending a request to delete the user session.
