@@ -33,6 +33,9 @@ metabase_login(base_url = "https://discover-evh1.hres.ca/api",
 
 # query
 df <- metabase_query("select * from table limit 10") 
+
+typed_df <-metabase_query("select * from table", col_types = cols(.default = col_character())) #sets the default type to character to avoid parsing failures
+
 small_df <- metabase_query2("select * from table limit 10") #limits to 2K records, used for quick queries
 
 # logout
