@@ -1,6 +1,6 @@
 # metabaser
 
-metabaser is an R package to connect to and query a Metabase API.
+`metabaser` is an R package to connect to and query a Metabase API.
 
 ## Installation
 
@@ -32,8 +32,8 @@ metabase_login(base_url = "https://discover-evh1.hres.ca/api",
 
 
 # query
-d <- metabase_query("select * from table limit 10") 
-e <- metabase_query2("select * from table limit 10") #limits to 2K records, used for quick queries
+df <- metabase_query("select * from table limit 10") 
+small_df <- metabase_query2("select * from table limit 10") #limits to 2K records, used for quick queries
 
 # logout
 metabase_logout()
