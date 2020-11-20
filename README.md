@@ -24,7 +24,7 @@ remotes::install_gitlab(repo = "phac/metabaser", host = "gitlab.hres.ca", auth_t
 
 ```
 # login and setup connection
-metabase_login(base_url = "https://discover-evh1.hres.ca/api",
+metabase_login(base_url = "https://discover-metabase.hres.ca/api",
                database_id = 2, # phac database
                creds_file = "~/metabase_creds", # a file with username and password 
                username = "METABASE_USERNAME",
