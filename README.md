@@ -14,11 +14,6 @@ install_github("PHACDataHub/metabaser")
 
 If installation via `devtools` fails, try using `remotes` (a subset of `devtools` solely for non-CRAN package installation) after setting up an authentication token (TODO: add auth_token instructions):
 
-```
-remotes::install_gitlab(repo = "phac/metabaser", host = "gitlab.hres.ca", auth_token = "MY_GENERATED_TOKEN")
-
-```
-
 ## Usage
 
 ```
