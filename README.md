@@ -10,8 +10,7 @@ The simplest way to install the package is directly from gitlab using `devtools`
 library(devtools)
 install_github("PHACDataHub/metabaser")
 ```
-Note that this is not completly secure as a password is typed in the clear.
-Some work needs to be done to investigate installation using access tokens (as below) or over SSH.
+
 
 If installation via `devtools` fails, try using `remotes` (a subset of `devtools` solely for non-CRAN package installation) after setting up an authentication token (TODO: add auth_token instructions):
 
