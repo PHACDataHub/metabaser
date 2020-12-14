@@ -7,8 +7,8 @@
 The simplest way to install the package is directly from gitlab using `devtools`.
 
 ```
-devtools::install_git('https://username:password@gitlab.hres.ca/phac/metabaser.git')
-
+library(devtools)
+install_github("PHACDataHub/metabaser")
 ```
 Note that this is not completly secure as a password is typed in the clear.
 Some work needs to be done to investigate installation using access tokens (as below) or over SSH.
