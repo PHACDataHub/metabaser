@@ -4,7 +4,7 @@
 
 ## Installation
 
-The simplest way to install the package is directly from gitlab using `devtools`.
+The simplest way to install the package is directly from github using `devtools`.
 
 ```
 library(devtools)
