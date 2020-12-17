@@ -10,6 +10,90 @@ build_url <- function(handle, path) {
     paste(handle$base_url, path, sep = "/")
 }
 
+
+
+#' Sets a default to be used for matabaser
+#'
+#' typically the user will set all values at once from the function metabase_set_defaults
+#'
+#' @param param normally one of base_url, database_id, creds_file, username, password
+#' @param value the value for which ever one is being set
+metabase_set_default <- function(param, value){
+
+    if(purrr::is_null(value)){
+        return(FALSE)
+    }
+
+    if(rlang::is_na(value)){
+        return(FALSE)
+    }
+
+    tryCatch({
+        #print(glue::glue("param={param}"))
+        #print(glue::glue("value={value}"))
+        keyring::key_set_with_value("metabaser_defaults",
+                                    username = param,
+                                    password = as.character(value)
+                                    )
+        return(TRUE)
+
+
+
+    },
+    error = function(x){
+                print(glue::glue("metabaser default param='{param}' did not set."))
+                return(FALSE)
+        },
+    finally = print("")
+
+    )
+
+    return(TRUE)
+}
+
+
+#' Sets the defaults to be used for metabaser
+#'
+#'
+#' @param base_url Base URL for the Metabase API
+#' @param database_id Database ID to connect to
+#' @param creds_file File containing Metabase account credentials to connect with
+#' @param username Username
+#' @param password Password
+#' @export
+metabase_set_defaults <- function(
+    base_url = NA,
+    database_id = NA,
+    creds_file = NA,
+    username = NA,
+    pw = NA
+){
+    metabase_set_default(param = "base_url", value = base_url)
+    metabase_set_default(param = "database_id", value = database_id)
+    metabase_set_default(param = "creds_file", value = creds_file)
+    metabase_set_default(param = "username", value = username)
+    metabase_set_default(param = "password", value = pw)
+}
+
+
+
+#' gets a default to be used for metabaser
+#'
+#'
+#' @param param normally one of base_url, database_id, creds_file, username, password
+metabase_get_default <- function(param){
+    tryCatch({
+        keyring::key_get("metabaser_defaults", param)
+        },
+        error = function(x){
+            print(glue::glue("metabaser default param='{param}' is missing."))
+            return(NULL)
+            },
+        finally =
+    )
+}
+
+
 #' Construct a Metabase API Handle
 #'
 #' This is constructor to make a metabase_handle object which
@@ -37,6 +121,27 @@ metabase_handle <- function(base_url, database_id, username) {
 is_metabase_handle <- function(handle) {
     inherits(handle, "metabase_handle")
 }
+#' Login to Metabase using default credentials
+#'
+#' see metabase_login for description of parameters
+#'
+#' @export
+metabase_login_default <- function(base_url = metabase_get_default("base_url"),
+                           database_id = metabase_get_default("database_id"),
+                           creds_file = metabase_get_default("creds_file"),
+                           username = metabase_get_default("username"),
+                           password = metabase_get_default("password"),
+                           ...
+) {
+    metabase_login(base_url = base_url,
+                           database_id = database_id,
+                           creds_file = creds_file,
+                           username = username,
+                           password = password,
+                           ...)
+}
+
+
 
 #' Login to Metabase
 #'
@@ -53,7 +158,12 @@ is_metabase_handle <- function(handle) {
 #' @param username Username
 #' @param password Password
 #' @export
-metabase_login <- function(base_url, database_id, creds_file = NULL, username = NULL, password = NULL) {
+metabase_login <- function(base_url = NULL,
+                           database_id = NULL,
+                           creds_file = NULL,
+                           username = NULL,
+                           password = NULL
+                           ) {
     if (!is.null(creds_file)) {
         creds <- stringr::str_split(readr::read_lines(creds_file), "=", simplify = TRUE)[,2]
         username <- creds[1]
@@ -148,6 +258,32 @@ metabase_query2 <- function(handle, sql_query) {
         dplyr::as_tibble(data)
     }
 }
+
+
+
+
+
+
+#' Query Metabase
+#'
+#' Sends an SQL query to Metabase for the given database.
+#' Data is limited to 2000 records by the server using this approach.
+#' This might be faster for small lookups of the DB.
+#'
+#' @param sql_query SQL query to execute
+#' @param handle metabase_handle object
+#'
+#' @return data.frame containing the results of the query
+#' @export
+metabase_query_sql <- function(sql_query,
+                                  handle = metabase_login_default(),
+                                  col_types = readr::cols(.default = readr::col_character()),
+                               ...){
+    metabase_query(handle = handle, sql_query = sql_query, col_types = col_types, ...)
+}
+
+
+
 
 #' Query Metabase
 #'
