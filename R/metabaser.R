@@ -1,6 +1,26 @@
 #' @importFrom magrittr %>%
 NULL
 
+
+#holds a cache of data frames
+METABASER_CACHE_DFS <- list()
+
+
+#'
+#' Clears all the memmory Cache from the metabaser
+#'
+#' @export
+metabase_cache_clear <- function(){
+    #' deletes cache for metabase
+    METABASER_CACHE_DFS <<- list()
+    gc()
+}
+
+
+
+
+
+
 #' Assemble URL
 #'
 #' @param handle metabase_handle object
@@ -21,6 +41,9 @@ build_url <- function(handle, path) {
 metabase_set_default <- function(param, value){
 
     if(purrr::is_null(value)){
+        if (param %in% keyring::key_list(service = "metabaser_defaults")[["username"]]){
+            keyring::key_delete(service = "metabaser_defaults", username = param)
+        }
         return(FALSE)
     }
 
@@ -29,9 +52,9 @@ metabase_set_default <- function(param, value){
     }
 
     tryCatch({
-        #print(glue::glue("param={param}"))
-        #print(glue::glue("value={value}"))
-        keyring::key_set_with_value("metabaser_defaults",
+        #print(stringr::str_glue("param={param}"))
+        #print(stringr::str_glue("value={value}"))
+        keyring::key_set_with_value(service = "metabaser_defaults",
                                     username = param,
                                     password = as.character(value)
                                     )
@@ -41,7 +64,7 @@ metabase_set_default <- function(param, value){
 
     },
     error = function(x){
-                print(glue::glue("metabaser default param='{param}' did not set."))
+                print(stringr::str_glue("metabaser default param='{param}' did not set."))
                 return(FALSE)
         },
     finally = print("")
@@ -62,17 +85,17 @@ metabase_set_default <- function(param, value){
 #' @param password Password
 #' @export
 metabase_set_defaults <- function(
-    base_url = NA,
-    database_id = NA,
-    creds_file = NA,
-    username = NA,
-    pw = NA
+    base_url = NULL,
+    database_id = NULL,
+    creds_file = NULL,
+    username = NULL,
+    pw = NULL
 ){
-    metabase_set_default(param = "base_url", value = base_url)
-    metabase_set_default(param = "database_id", value = database_id)
-    metabase_set_default(param = "creds_file", value = creds_file)
-    metabase_set_default(param = "username", value = username)
-    metabase_set_default(param = "password", value = pw)
+    metabase_set_default(param = deparse(substitute(base_url)), value = base_url)
+    metabase_set_default(param = deparse(substitute(database_id)), value = database_id)
+    metabase_set_default(param = deparse(substitute(creds_file)), value = creds_file)
+    metabase_set_default(param = deparse(substitute(username)), value = username)
+    metabase_set_default(param = deparse(substitute(pw)), value = pw)
 }
 
 
@@ -83,10 +106,10 @@ metabase_set_defaults <- function(
 #' @param param normally one of base_url, database_id, creds_file, username, password
 metabase_get_default <- function(param){
     tryCatch({
-        keyring::key_get("metabaser_defaults", param)
+        keyring::key_get(service = "metabaser_defaults", username = param)
         },
         error = function(x){
-            print(glue::glue("metabaser default param='{param}' is missing."))
+            print(stringr::str_glue("metabaser default param='{param}' is missing."))
             return(NULL)
             },
         finally =
@@ -116,11 +139,20 @@ metabase_handle <- function(base_url, database_id, username) {
     ), class = "metabase_handle")
 }
 
+
+
+
+
 #' @describeIn metabase_handle Check for metabase_handle
 #' @keywords internal
 is_metabase_handle <- function(handle) {
     inherits(handle, "metabase_handle")
 }
+
+
+
+
+
 #' Login to Metabase using default credentials
 #'
 #' see metabase_login for description of parameters
@@ -264,6 +296,13 @@ metabase_query2 <- function(handle, sql_query) {
 
 
 
+
+
+
+
+
+
+
 #' Query Metabase
 #'
 #' Sends an SQL query to Metabase for the given database.
@@ -272,14 +311,39 @@ metabase_query2 <- function(handle, sql_query) {
 #'
 #' @param sql_query SQL query to execute
 #' @param handle metabase_handle object
+#' @param col_types default column type can be set to character for all
+#' @param use_cache if TRUE will use the cache if it is available
+#'
 #'
 #' @return data.frame containing the results of the query
+#'
 #' @export
 metabase_query_sql <- function(sql_query,
                                   handle = metabase_login_default(),
                                   col_types = readr::cols(.default = readr::col_character()),
+                                  use_cache = TRUE,
                                ...){
-    metabase_query(handle = handle, sql_query = sql_query, col_types = col_types, ...)
+
+    key <- digest::digest(sql_query)
+    df <- METABASER_CACHE_DFS[[key]]
+
+    if(!is.null(df) & use_cache){
+        message(stringr::str_glue("cache used for {sql_query}"))
+        return(df)
+    }
+
+
+
+
+    df <- metabase_query(handle = handle,
+                   sql_query = sql_query,
+                   col_types = col_types,
+                   ...)
+
+
+    METABASER_CACHE_DFS[[key]] <<- df
+
+    return(df)
 }
 
 
