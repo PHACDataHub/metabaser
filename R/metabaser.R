@@ -11,7 +11,7 @@ METABASER_CACHE_DFS <- list()
 #'
 #' @export
 metabase_cache_clear <- function(){
-    #' deletes cache for metabase
+    # deletes cache for metabase
     METABASER_CACHE_DFS <<- list()
     gc()
 }
