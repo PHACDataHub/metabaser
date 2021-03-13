@@ -5,8 +5,8 @@
 \title{Login to Metabase}
 \usage{
 metabase_login(
-  base_url,
-  database_id,
+  base_url = NULL,
+  database_id = NULL,
   creds_file = NULL,
   username = NULL,
   password = NULL
