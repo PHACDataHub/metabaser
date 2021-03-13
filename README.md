@@ -23,11 +23,11 @@ metabase_login(base_url = "https://discover-metabase.hres.ca/api",
 
 
 # query
-df <- metabase_query("select * from table limit 10") 
+df <- metabase_query("select * from table;") 
 
-typed_df <-metabase_query("select * from table", col_types = cols(.default = col_character())) #sets the default type to character to avoid parsing failures
+typed_df <-metabase_query("select * from table;", col_types = cols(.default = col_character())) #sets the default type to character to avoid parsing failures
 
-small_df <- metabase_query2("select * from table limit 10") #limits to 2K records, used for quick queries
+small_df <- metabase_query2("select * from table;") #limits to 2K records, used for quick queries
 
 # logout
 metabase_logout()
