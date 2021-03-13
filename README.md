@@ -1,18 +1,15 @@
-# metabaser
+# metabaserer
 
-`metabaser` is an R package to connect to and query a Metabase API.
+`metabaserer` is an R package to connect to and query a Metabase API. It improves on the previous `metabaser` package, and (presumably) will someday be subsumed by `metabaserest`.
 
 ## Installation
 
-The simplest way to install the package is directly from github using `devtools`.
+If you're not already comfortable with `devtools`, the simplest way to install the package is directly from github using `remotes` (a subset of `devtools` for installing non-CRAN packages).
 
 ```
-library(devtools)
-install_github("PHACDataHub/metabaser")
+library(remotes)
+install_github("PHACDataHub/metabaserer")
 ```
-
-
-If installation via `devtools` fails, try using `remotes` (a subset of `devtools` solely for non-CRAN package installation) after setting up an authentication token (TODO: add auth_token instructions):
 
 ## Usage
 
